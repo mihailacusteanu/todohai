@@ -1,4 +1,7 @@
 defmodule Todohai.Domain.Task.DummyImplementation do
+  @moduledoc """
+  Dummy implementation for persistance for testing.
+  """
   @behaviour Todohai.Domain.Task.PersistanceImplementation
 
   alias Todohai.Schema.Task, as: TaskSchema
