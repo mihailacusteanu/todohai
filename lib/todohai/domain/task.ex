@@ -64,6 +64,8 @@ defmodule Todohai.Domain.Task do
     end
   end
 
+  defdelegate delete_by_id(id), to: @persistance_implementation
+
   @spec list_tasks() :: list(task_schema)
   def list_tasks() do
     @persistance_implementation.list_tasks()

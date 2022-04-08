@@ -91,4 +91,17 @@ defmodule Todohai.Test.TaskTest do
                Task.add_child_task(parent_task, existing_child_task.text)
     end
   end
+
+  describe "delete a task" do
+    test "and succeeed" do
+      {:ok, to_be_deleted_task} = Task.new(%{text: "new task 1"})
+      :ok = Task.delete_by_id(to_be_deleted_task.id)
+      assert to_be_deleted_task not in Task.list_tasks()
+    end
+
+    test "and fail because of missing task" do
+      {:error, {:cannot_delete_task_by_id, "The task with id=0 doesn't exist"}} =
+        Task.delete_by_id(0)
+    end
+  end
 end

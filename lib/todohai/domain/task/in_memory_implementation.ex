@@ -31,4 +31,22 @@ defmodule Todohai.Domain.Task.InMemoryImplementation do
       end)
     end)
   end
+
+  @impl true
+  def delete_by_id(id) do
+    list_of_tasks = list_tasks()
+
+    case Enum.find(list_of_tasks, fn t -> t.id == id end) do
+      nil ->
+        {:error, {:cannot_delete_task_by_id, "The task with id=#{id} doesn't exist"}}
+
+      _ ->
+        Agent.update(:in_memory_task_persistance, fn tasks ->
+          tasks
+          |> Enum.filter(fn task ->
+            task.id != id
+          end)
+        end)
+    end
+  end
 end
