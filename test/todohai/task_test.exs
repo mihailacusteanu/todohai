@@ -4,15 +4,42 @@ defmodule Todohai.Test.TaskTest do
   alias Todohai.Domain.Task
   alias Todohai.Schema.Task, as: TaskSchema
 
+  setup do
+    task1 = %TaskSchema{text: "task1", id: 1, done: false, parent: nil}
+    task2 = %TaskSchema{text: "task2", id: 2, done: false, parent: nil}
+    task3 = %TaskSchema{text: "task3", id: 3, done: false, parent: nil}
+    task4 = %TaskSchema{text: "task4", id: 4, done: false, parent: task1}
+    task5 = %TaskSchema{text: "task5", id: 5, done: false, parent: task2}
+
+    list_of_tasks = [
+      task1,
+      task2,
+      task3,
+      task4,
+      task5
+    ]
+
+    Agent.start_link(
+      fn ->
+        list_of_tasks
+      end,
+      name: :in_memory_task_persistance
+    )
+
+    {:ok, %{list_of_tasks: list_of_tasks}}
+  end
+
+  end
+
   describe "add child task" do
     test "and succeed" do
-      parent_task = %TaskSchema{text: "Joe", id: 3, done: false, parent: nil}
+      parent_task = %TaskSchema{text: "task3", id: 3, done: false, parent: nil}
       {:ok, child_task} = Task.add_child_task(parent_task, "Child Task 2")
       assert child_task.parent == parent_task
     end
 
     test "and fail because of invalid parent" do
-      parent_task = %TaskSchema{text: "John", id: -1, done: false, parent: nil}
+      parent_task = %TaskSchema{text: "task1", id: -1, done: false, parent: nil}
 
       assert {:error,
               {:cannot_add_invalid_parent, "The parent task with id -1 doesn't exist anymore"}} =
@@ -23,7 +50,7 @@ defmodule Todohai.Test.TaskTest do
       child_text =
         "TextIsTooLongTextIsTooLongTextIsTooLongTextIsTooLongTextIsTooLongTextIsTooLong"
 
-      parent_task = %TaskSchema{text: "Joe", id: 3, done: false, parent: nil}
+      parent_task = %TaskSchema{text: "task3", id: 3, done: false, parent: nil}
 
       assert {
                :error,
@@ -34,9 +61,9 @@ defmodule Todohai.Test.TaskTest do
              } = Task.add_child_task(parent_task, child_text)
     end
 
-    test "and fail because of duplicate text" do
+    test "and fail because of duplicate text", %{list_of_tasks: list_of_tasks} do
       existing_child_task =
-        Todohai.Domain.Task.DummyImplementation.list_tasks()
+        list_of_tasks
         |> Enum.find(fn t -> not is_nil(t.parent) end)
 
       parent_task = existing_child_task.parent

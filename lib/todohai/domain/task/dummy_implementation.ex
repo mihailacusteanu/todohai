@@ -8,10 +8,10 @@ defmodule Todohai.Domain.Task.DummyImplementation do
 
   @impl true
   def list_tasks() do
-    task1 = %TaskSchema{text: "John", id: 1, done: false, parent: nil}
-    task2 = %TaskSchema{text: "Jane", id: 2, done: false, parent: nil}
-    task3 = %TaskSchema{text: "Joe", id: 3, done: false, parent: nil}
-    task4 = %TaskSchema{text: "Jack", id: 4, done: false, parent: task1}
+    task1 = %TaskSchema{text: "task1", id: 1, done: false, parent: nil}
+    task2 = %TaskSchema{text: "task2", id: 2, done: false, parent: nil}
+    task3 = %TaskSchema{text: "task3", id: 3, done: false, parent: nil}
+    task4 = %TaskSchema{text: "task4", id: 4, done: false, parent: task1}
     task5 = %TaskSchema{text: "Jill", id: 5, done: false, parent: task2}
 
     [
