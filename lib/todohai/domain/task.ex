@@ -65,19 +65,7 @@ defmodule Todohai.Domain.Task do
   end
 
   defdelegate delete_by_id(id), to: @persistance_implementation
-
-  @spec list_tasks() :: list(task_schema)
-  def list_tasks() do
-    @persistance_implementation.list_tasks()
-  end
-
-  @spec list_by(map()) :: list(task_schema)
-  def list_by(attrs) do
-    @persistance_implementation.list_by(attrs)
-  end
-
-  @spec new(map()) :: {:ok, task_schema}
-  def new(attrs) do
-    @persistance_implementation.new(attrs)
-  end
+  defdelegate list_tasks(), to: @persistance_implementation
+  defdelegate list_by(attrs), to: @persistance_implementation
+  defdelegate new(attrs), to: @persistance_implementation
 end
