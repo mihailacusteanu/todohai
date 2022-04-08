@@ -16,7 +16,7 @@ defmodule Todohai.Domain.Task.InMemoryImplementation do
     new_task = struct(%TaskSchema{}, Map.merge(attrs, %{id: Enum.random(1..10_000_000)}))
 
     Agent.update(:in_memory_task_persistance, &(&1 ++ [new_task]))
-    new_task
+    {:ok, new_task}
   end
 
   @impl true

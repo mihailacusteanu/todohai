@@ -29,6 +29,23 @@ defmodule Todohai.Test.TaskTest do
     {:ok, %{list_of_tasks: list_of_tasks}}
   end
 
+  describe "list tasks" do
+    test "all", %{list_of_tasks: list_of_tasks} do
+      assert list_of_tasks == Task.list_tasks()
+    end
+
+    test "all by id", %{list_of_tasks: list_of_tasks} do
+      task = List.first(list_of_tasks)
+      assert [task] == Task.list_by(%{id: task.id})
+    end
+  end
+
+  describe "create new task" do
+    test "and succeeed" do
+      text = "new task"
+      {:ok, new_task} = Task.new(%{text: text})
+      assert new_task in Task.list_tasks()
+    end
   end
 
   describe "add child task" do
