@@ -7,10 +7,14 @@ defmodule Todohai.Domain.Task do
   @persistance_implementation Application.compile_env(:todohai, :persistance_implementation)
 
   @type task_schema :: %TaskSchema{}
-  @type invalid_parrent_error :: {:error, {:cannot_add_invalid_parent, String.t()}}
-  @type invalid_text_for_child_error ::
-          {:error, {:cannot_add_child_task_with_invalid_text, String.t()}}
+  @type is_allowed_text_return_type ::
+          :ok | {:error, {:cannot_add_child_task_with_invalid_text, String.t()}}
+  @type check_duplicate_return_type :: :ok | {:error, {:duplicate_child_task, String.t()}}
+  @type exits_return_type :: :ok | {:error, {:cannot_add_invalid_parent, String.t()}}
 
+  @doc """
+  adds a child task for the given text and parent.
+  """
   @spec add_child_task(task_schema, String.t()) :: {:ok, task_schema}
   def add_child_task(parent_task, text) do
     with :ok <- exits?(parent_task),
@@ -28,7 +32,8 @@ defmodule Todohai.Domain.Task do
     end
   end
 
-  def check_duplicate(parent_task, text) do
+  @spec check_duplicate(task_schema, String.t()) :: check_duplicate_return_type
+  defp check_duplicate(parent_task, text) do
     case list_by(%{parent: parent_task, text: text}) do
       [] ->
         :ok
@@ -38,7 +43,7 @@ defmodule Todohai.Domain.Task do
     end
   end
 
-  @spec is_allowed_text?(String.t()) :: :ok | invalid_text_for_child_error
+  @spec is_allowed_text?(String.t()) :: is_allowed_text_return_type
   defp is_allowed_text?(text) do
     case String.length(text) <= 50 do
       true -> :ok
@@ -46,8 +51,8 @@ defmodule Todohai.Domain.Task do
     end
   end
 
-  @spec exits?(task_schema) :: :ok | invalid_parrent_error
-  def exits?(parent_task) do
+  @spec exits?(task_schema) :: exits_return_type
+  defp exits?(parent_task) do
     case list_by(%{id: parent_task.id}) do
       [] ->
         {:error,
@@ -69,7 +74,7 @@ defmodule Todohai.Domain.Task do
     @persistance_implementation.list_by(attrs)
   end
 
-  @spec new(map()) :: task_schema()
+  @spec new(map()) :: {:ok, task_schema}
   def new(attrs) do
     @persistance_implementation.new(attrs)
   end

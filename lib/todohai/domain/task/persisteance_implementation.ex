@@ -5,6 +5,8 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
 
   @type task_schema :: %TaskSchema{}
   @type list_of_task_schema :: list(task_schema)
+  @type list_by_return_type ::
+          list_of_task_schema | {:error, {:get_task_by_attrs_not_found, String.t()}}
 
   @doc """
   List all the tasks.
@@ -13,11 +15,10 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   @doc """
   List all the tasks that have the given fields of the input attributes.
   """
-  @callback list_by(map()) ::
-              list(task_schema) | {:error, {:get_task_by_attrs_not_found, String.t()}}
+  @callback list_by(map()) :: list_by_return_type
 
   @doc """
-  Create a new task.
+  Create a new task with the given attributes.
   """
-  @callback new(map()) :: task_schema
+  @callback new(map()) :: {:ok, task_schema}
 end
