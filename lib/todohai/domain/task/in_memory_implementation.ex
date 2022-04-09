@@ -49,4 +49,15 @@ defmodule Todohai.Domain.Task.InMemoryImplementation do
         end)
     end
   end
+
+  @impl true
+
+  def find_by_id(id) do
+    list_of_tasks = list_tasks()
+
+    case Enum.find(list_of_tasks, fn t -> t.id == id end) do
+      nil -> {:error, {:cannot_find_task_by_id, "The task with id=#{id} doesn't exist"}}
+      task -> {:ok, task}
+    end
+  end
 end

@@ -8,6 +8,9 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   @type list_by_return_type ::
           list_of_task_schema | {:error, {:get_task_by_attrs_not_found, String.t()}}
   @type delete_by_id_return_type :: :ok | {:error, {:cannot_delete_task_by_id, String.t()}}
+  @type find_by_id_return_type ::
+          {:ok, task_schema} | {:error, {:cannot_find_task_by_id, String.t()}}
+
   @doc """
   List all the tasks.
   """
@@ -26,4 +29,9 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   deletes the task with the given id.
   """
   @callback delete_by_id(non_neg_integer()) :: delete_by_id_return_type
+
+  @doc """
+  Find a task for the given id.
+  """
+  @callback find_by_id(non_neg_integer()) :: find_by_id_return_type
 end

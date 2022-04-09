@@ -104,4 +104,17 @@ defmodule Todohai.Test.TaskTest do
         Task.delete_by_id(0)
     end
   end
+
+  describe "find a task by id" do
+    test "and succeed", %{list_of_tasks: list_of_tasks} do
+      first_task = List.first(list_of_tasks)
+      {:ok, task} = Task.find_by_id(first_task.id)
+      assert first_task == task
+    end
+
+    test "and fail because of missing task" do
+      assert {:error, {:cannot_find_task_by_id, "The task with id=0 doesn't exist"}} =
+               Task.find_by_id(0)
+    end
+  end
 end
