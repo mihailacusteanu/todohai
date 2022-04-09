@@ -117,4 +117,17 @@ defmodule Todohai.Test.TaskTest do
                Task.find_by_id(0)
     end
   end
+
+  describe "update a task" do
+    test "and succeed" do
+      {:ok, task} = Task.new(%{text: "new task 1"})
+      {:ok, task} = Task.update_by_id(task.id, %{text: "new task 1 updated"})
+      assert task.text == "new task 1 updated"
+    end
+
+    test "and fail because of missing task" do
+      {:error, {:cannot_update_task_by_id, "The task with id=0 doesn't exist"}} =
+        Task.update_by_id(0, %{text: "new task 1 updated"})
+    end
+  end
 end

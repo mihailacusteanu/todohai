@@ -69,4 +69,5 @@ defmodule Todohai.Domain.Task do
   defdelegate list_by(attrs), to: @persistance_implementation
   defdelegate new(attrs), to: @persistance_implementation
   defdelegate find_by_id(id), to: @persistance_implementation
+  defdelegate update_by_id(id, attrs), to: @persistance_implementation
 end

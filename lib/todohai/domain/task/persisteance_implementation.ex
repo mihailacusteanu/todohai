@@ -10,6 +10,8 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   @type delete_by_id_return_type :: :ok | {:error, {:cannot_delete_task_by_id, String.t()}}
   @type find_by_id_return_type ::
           {:ok, task_schema} | {:error, {:cannot_find_task_by_id, String.t()}}
+  @type update_by_id_return_type ::
+          {:ok, task_schema} | {:error, {:cannot_update_by_id, String.t()}}
 
   @doc """
   List all the tasks.
@@ -34,4 +36,10 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   Find a task for the given id.
   """
   @callback find_by_id(non_neg_integer()) :: find_by_id_return_type
+
+  @doc """
+  Mark the task with the given id as done.
+  """
+  @callback update_by_id(non_neg_integer(), map()) :: update_by_id_return_type
+
 end
