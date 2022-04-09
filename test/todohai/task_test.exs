@@ -130,4 +130,18 @@ defmodule Todohai.Test.TaskTest do
         Task.update_by_id(0, %{text: "new task 1 updated"})
     end
   end
+
+  describe "Mark task as done" do
+    test "and succeed", %{list_of_tasks: list_of_tasks} do
+      first_task = List.first(list_of_tasks)
+      refute first_task.done
+      {:ok, task} = Task.mark_as_done_by_id(first_task.id)
+      assert task.done
+    end
+
+    test "and fail because of missing task" do
+      assert {:error, {:cannot_mark_as_done_by_id, "The task with id=0 doesn't exist"}} =
+               Task.mark_as_done_by_id(0)
+    end
+  end
 end

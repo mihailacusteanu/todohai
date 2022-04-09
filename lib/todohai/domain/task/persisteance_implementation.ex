@@ -41,5 +41,4 @@ defmodule Todohai.Domain.Task.PersistanceImplementation do
   Mark the task with the given id as done.
   """
   @callback update_by_id(non_neg_integer(), map()) :: update_by_id_return_type
-
 end

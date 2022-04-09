@@ -11,7 +11,8 @@ defmodule Todohai.Domain.Task do
           :ok | {:error, {:cannot_add_child_task_with_invalid_text, String.t()}}
   @type check_duplicate_return_type :: :ok | {:error, {:duplicate_child_task, String.t()}}
   @type exits_return_type :: :ok | {:error, {:cannot_add_invalid_parent, String.t()}}
-
+  @type mark_as_done_by_id_return_type ::
+          {:ok, task_schema} | {:error, {:cannot_mark_as_done_by_id, String.t()}}
   @doc """
   adds a child task for the given text and parent.
   """
@@ -29,6 +30,20 @@ defmodule Todohai.Domain.Task do
         |> new()
 
       {:ok, child_task}
+    end
+  end
+
+  @doc """
+  Mark the task as done by id.
+  """
+  @spec mark_as_done_by_id(non_neg_integer()) :: mark_as_done_by_id_return_type
+  def mark_as_done_by_id(id) do
+    case update_by_id(id, %{done: true}) do
+      {:ok, task} ->
+        {:ok, task}
+
+      {:error, {:cannot_update_task_by_id, _string_error}} ->
+        {:error, {:cannot_mark_as_done_by_id, "The task with id=#{id} doesn't exist"}}
     end
   end
 
