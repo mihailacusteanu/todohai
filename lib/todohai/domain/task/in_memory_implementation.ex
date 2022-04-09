@@ -21,13 +21,16 @@ defmodule Todohai.Domain.Task.InMemoryImplementation do
 
   @impl true
   def list_by(attrs) do
-    Agent.get(:in_memory_task_persistance, fn tasks ->
-      tasks
-      |> Enum.filter(fn task ->
-        attrs
-        |> Enum.all?(fn {k, v} ->
-          Map.from_struct(task)[k] == v
-        end)
+    list_of_tasks =
+      Agent.get(:in_memory_task_persistance, fn tasks ->
+        tasks
+      end)
+
+    list_of_tasks
+    |> Enum.filter(fn task ->
+      attrs
+      |> Enum.all?(fn {k, v} ->
+        Map.from_struct(task)[k] == v
       end)
     end)
   end
@@ -36,17 +39,18 @@ defmodule Todohai.Domain.Task.InMemoryImplementation do
   def delete_by_id(id) do
     list_of_tasks = list_tasks()
 
+    list_of_task_after_deletion =
+      list_of_tasks
+      |> Enum.filter(fn task ->
+        task.id != id
+      end)
+
     case Enum.find(list_of_tasks, fn t -> t.id == id end) do
       nil ->
         {:error, {:cannot_delete_task_by_id, "The task with id=#{id} doesn't exist"}}
 
       _ ->
-        Agent.update(:in_memory_task_persistance, fn tasks ->
-          tasks
-          |> Enum.filter(fn task ->
-            task.id != id
-          end)
-        end)
+        Agent.update(:in_memory_task_persistance, fn _tasks -> list_of_task_after_deletion end)
     end
   end
 
