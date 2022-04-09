@@ -49,10 +49,12 @@ defmodule Todohai.Test.TaskTest do
   end
 
   describe "add child task" do
-    test "and succeed" do
-      parent_task = %TaskSchema{text: "task3", id: 3, done: false, parent: nil}
+    test "and succeed", %{list_of_tasks: list_of_tasks} do
+      parent_task = List.first(list_of_tasks)
       {:ok, child_task} = Task.add_child_task(parent_task, "Child Task 2")
       assert child_task.parent == parent_task
+      {:ok, update_parent} = Task.find_by_id(parent_task.id)
+      assert update_parent.is_parent
     end
 
     test "and fail because of invalid parent" do

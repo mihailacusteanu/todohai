@@ -21,6 +21,8 @@ defmodule Todohai.Domain.Task do
     with :ok <- exits?(parent_task),
          :ok <- is_allowed_text?(text),
          :ok <- check_duplicate(parent_task, text) do
+      {:ok, _parent} = update_by_id(parent_task.id, %{is_parent: true})
+
       {:ok, child_task} =
         %{
           text: text,
