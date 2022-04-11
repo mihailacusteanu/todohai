@@ -13,6 +13,14 @@ defmodule Todohai.Domain.Task do
   @type exits_return_type :: :ok | {:error, {:cannot_add_invalid_parent, String.t()}}
   @type mark_as_done_by_id_return_type ::
           {:ok, task_schema} | {:error, {:cannot_mark_as_done_by_id, String.t()}}
+
+  defdelegate delete_by_id(id), to: @persistance_implementation
+  defdelegate list_tasks(), to: @persistance_implementation
+  defdelegate list_by(attrs), to: @persistance_implementation
+  defdelegate new(attrs), to: @persistance_implementation
+  defdelegate find_by_id(id), to: @persistance_implementation
+  defdelegate update_by_id(id, attrs), to: @persistance_implementation
+
   @doc """
   adds a child task for the given text and parent.
   """
@@ -80,11 +88,4 @@ defmodule Todohai.Domain.Task do
         :ok
     end
   end
-
-  defdelegate delete_by_id(id), to: @persistance_implementation
-  defdelegate list_tasks(), to: @persistance_implementation
-  defdelegate list_by(attrs), to: @persistance_implementation
-  defdelegate new(attrs), to: @persistance_implementation
-  defdelegate find_by_id(id), to: @persistance_implementation
-  defdelegate update_by_id(id, attrs), to: @persistance_implementation
 end
