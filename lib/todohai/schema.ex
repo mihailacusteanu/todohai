@@ -21,7 +21,8 @@ defmodule Todohai.Schema do
 
   """
   def list_items do
-    Repo.all(Item)
+    query = from i in Item, preload: [:parent]
+    Repo.all(query)
   end
 
   @doc """
