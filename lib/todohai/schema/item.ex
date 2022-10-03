@@ -2,10 +2,13 @@ defmodule Todohai.Schema.Item do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @required_fields ~w(name is_done)a
+  @optional_fields ~w(parent_id)a
+
   schema "items" do
     field :is_done, :boolean, default: false
     field :name, :string
-    field :parent_id, :id
+    belongs_to :parent, __MODULE__
 
     timestamps()
   end
@@ -13,7 +16,7 @@ defmodule Todohai.Schema.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :is_done])
-    |> validate_required([:name, :is_done])
+    |> cast(attrs, @optional_fields ++ @required_fields)
+    |> validate_required(@required_fields)
   end
 end
