@@ -2,6 +2,8 @@ defmodule Todohai.Schema.Item do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type id() :: integer()
+
   @required_fields ~w(name is_done)a
   @optional_fields ~w(parent_id)a
 

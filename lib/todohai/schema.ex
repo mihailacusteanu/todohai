@@ -8,6 +8,8 @@ defmodule Todohai.Schema do
 
   alias Todohai.Schema.Item
 
+  @type item_id() :: Item.id()
+
   @doc """
   Returns the list of items.
 
@@ -87,6 +89,69 @@ defmodule Todohai.Schema do
   """
   def delete_item(%Item{} = item) do
     Repo.delete(item)
+  end
+
+  @doc """
+  List all items for a given parent item id.
+
+  ## Examples
+
+      iex> list_children_for_parent(parent_id1)
+      [%Item{}, %Item{}}, ...]
+
+      iex> list_children_for_parent(parent_id2)
+      []
+
+  """
+  @spec list_children_for_parent(parent_id) :: result
+        when result: [Item.t()],
+             parent_id: item_id() | nil
+  def list_children_for_parent(nil), do: []
+
+  def list_children_for_parent(parent_id) do
+    Repo.all(from i in Item, where: i.parent_id == ^parent_id)
+  end
+
+  @doc """
+  List items marked as done for a given parent item id.
+
+  ## Examples
+
+      iex> list_done_children_for_parent(parent_id1)
+      [%Item{is_done: true}, %Item{is_done: true}}, ...]
+
+      iex> list_done_children_for_parent(parent_id2)
+      []
+
+  """
+  @spec list_done_children_for_parent(parent_id) :: result
+        when result: [Item.t()],
+             parent_id: item_id() | nil
+  def list_done_children_for_parent(nil), do: []
+
+  def list_done_children_for_parent(parent_id) do
+    Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == true)
+  end
+
+  @doc """
+  List items NOT marked as done for a given parent item id.
+
+  ## Examples
+
+      iex> list_not_done_children_for_parent(parent_id1)
+      [%Item{is_done: true}, %Item{is_done: true}}, ...]
+
+      iex> list_not_done_children_for_parent(parent_id2)
+      []
+
+  """
+  @spec list_not_done_children_for_parent(parent_id) :: result
+        when result: [Item.t()],
+             parent_id: item_id() | nil
+  def list_not_done_children_for_parent(nil), do: []
+
+  def list_not_done_children_for_parent(parent_id) do
+    Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == false)
   end
 
   @doc """
