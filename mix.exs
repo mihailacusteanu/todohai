@@ -49,7 +49,8 @@ defmodule Todohai.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false}
+      {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 
