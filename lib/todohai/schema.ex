@@ -72,9 +72,15 @@ defmodule Todohai.Schema do
 
   """
   def update_item(%Item{} = item, attrs) do
-    item
-    |> Item.changeset(attrs)
-    |> Repo.update()
+    children = list_children_for_parent(item.id) |> Enum.map(fn it -> it.id end)
+
+    if attrs[:parent_id] in children do
+      {:error, {:update_item_error, "Parent item can't be child item"}}
+    else
+      item
+      |> Item.changeset(attrs)
+      |> Repo.update()
+    end
   end
 
   @doc """

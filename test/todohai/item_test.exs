@@ -80,4 +80,19 @@ defmodule Todohai.ItemTest do
       Schema.delete_item(child_item2)
     end
   end
+
+  describe "update item" do
+    test "and not allow circular dependence" do
+      item1 = item_fixture(%{name: "item1"})
+
+      item2 = item_fixture(%{parent_id: item1.id, name: "item2"})
+
+      assert Schema.update_item(item1, %{parent_id: item2.id}) ==
+               {:error, {:update_item_error, "Parent item can't be child item"}}
+
+      Schema.update_item(item2, %{parent_id: nil})
+      Schema.delete_item(item1)
+      Schema.delete_item(item2)
+    end
+  end
 end
