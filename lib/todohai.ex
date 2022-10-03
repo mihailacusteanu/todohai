@@ -1,6 +1,6 @@
 defmodule Todohai do
   @moduledoc """
-  Todohai keeps the contexts that define your domain
+  To dohai keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

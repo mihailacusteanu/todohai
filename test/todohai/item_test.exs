@@ -51,4 +51,33 @@ defmodule Todohai.ItemTest do
       Schema.delete_item(child_item_not_done)
     end
   end
+
+  describe "add child item" do
+    setup do
+      %{parent_item: item_fixture()}
+    end
+
+    test "and get item with parent_id", %{parent_item: parent_item} do
+      {:ok, child_item} = Schema.add_child(parent_item.id, %{name: "child item"})
+      assert Schema.get_item!(child_item.id).parent_id == parent_item.id
+      Schema.delete_item(child_item)
+    end
+
+    test "and update parent's no_of_children", %{parent_item: parent_item} do
+      {:ok, child_item1} = Schema.add_child(parent_item.id, %{name: "child item1", is_done: true})
+      assert Schema.get_item!(parent_item.id).no_of_children == 1
+      assert Schema.get_item!(parent_item.id).no_of_done_children == 1
+      assert Schema.get_item!(parent_item.id).no_of_not_done_children == 0
+
+      {:ok, child_item2} =
+        Schema.add_child(parent_item.id, %{name: "child item2", is_done: false})
+
+      assert Schema.get_item!(parent_item.id).no_of_children == 2
+      assert Schema.get_item!(parent_item.id).no_of_done_children == 1
+      assert Schema.get_item!(parent_item.id).no_of_not_done_children == 1
+
+      Schema.delete_item(child_item1)
+      Schema.delete_item(child_item2)
+    end
+  end
 end

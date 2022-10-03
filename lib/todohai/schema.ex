@@ -9,6 +9,7 @@ defmodule Todohai.Schema do
   alias Todohai.Schema.Item
 
   @type item_id() :: Item.id()
+  @type item() :: %Item{}
 
   @doc """
   Returns the list of items.
@@ -104,7 +105,7 @@ defmodule Todohai.Schema do
 
   """
   @spec list_children_for_parent(parent_id) :: result
-        when result: [Item.t()],
+        when result: [item()],
              parent_id: item_id() | nil
   def list_children_for_parent(nil), do: []
 
@@ -125,7 +126,7 @@ defmodule Todohai.Schema do
 
   """
   @spec list_done_children_for_parent(parent_id) :: result
-        when result: [Item.t()],
+        when result: [item()],
              parent_id: item_id() | nil
   def list_done_children_for_parent(nil), do: []
 
@@ -146,13 +147,57 @@ defmodule Todohai.Schema do
 
   """
   @spec list_not_done_children_for_parent(parent_id) :: result
-        when result: [Item.t()],
+        when result: [item()],
              parent_id: item_id() | nil
   def list_not_done_children_for_parent(nil), do: []
 
   def list_not_done_children_for_parent(parent_id) do
     Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == false)
   end
+
+  @spec add_child(item_id(), child_attrs) :: result
+        when result: {:ok, item()} | {:error, Ecto.Changeset.t()},
+             child_attrs: %{
+               required(:name) => String.t(),
+               required(:is_done) => boolean(),
+               required(:no_of_children) => integer(),
+               required(:no_of_done_children) => integer(),
+               required(:no_of_not_done_children) => integer(),
+               optional(:parent_id) => item_id()
+             }
+  def add_child(parent_id, child_attrs) do
+    child_attrs = Map.merge(child_attrs, %{parent_id: parent_id})
+    parent_item = get_item!(parent_id)
+
+    %Item{}
+    |> Item.changeset(child_attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, child} ->
+        parent_new_attrs = build_parent_attrs_after_add_child(child, parent_item)
+        {:ok, _parent_item} = update_item(parent_item, parent_new_attrs)
+        {:ok, child}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  def build_parent_attrs_after_add_child(
+        %{is_done: true} = _child,
+        %{no_of_children: no_of_children, no_of_done_children: no_of_done_children} = _parent
+      ),
+      do: %{no_of_children: no_of_children + 1, no_of_done_children: no_of_done_children + 1}
+
+  def build_parent_attrs_after_add_child(
+        %{is_done: false} = _child,
+        %{no_of_children: no_of_children, no_of_not_done_children: no_of_not_done_children} =
+          _parent
+      ),
+      do: %{
+        no_of_children: no_of_children + 1,
+        no_of_not_done_children: no_of_not_done_children + 1
+      }
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking item changes.
