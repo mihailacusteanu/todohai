@@ -10,10 +10,18 @@ defmodule TodohaiWeb.ItemLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:item, Schema.get_item!(id))}
+    all_items =
+      Schema.list_items()
+      |> Enum.reject(fn it -> "#{it.id}" == id end)
+      |> Enum.map(fn item -> {item.name, item.id} end)
+
+    socket =
+      socket
+      |> assign(:page_title, page_title(socket.assigns.live_action))
+      |> assign(:item, Schema.get_item!(id))
+      |> assign(:all_items, all_items)
+
+    {:noreply, socket}
   end
 
   defp page_title(:show), do: "Show Item"

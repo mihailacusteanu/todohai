@@ -15,15 +15,24 @@ defmodule TodohaiWeb.ItemLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    all_items =
+      Schema.list_items()
+      |> Enum.reject(fn it -> "#{it.id}" == id end)
+      |> Enum.map(fn item -> {item.name, item.id} end)
+
     socket
     |> assign(:page_title, "Edit Item")
     |> assign(:item, Schema.get_item!(id))
+    |> assign(:all_items, all_items)
   end
 
   defp apply_action(socket, :new, _params) do
+    all_items = Schema.list_items() |> Enum.map(fn item -> {item.name, item.id} end)
+
     socket
     |> assign(:page_title, "New Item")
     |> assign(:item, %Item{})
+    |> assign(:all_items, all_items)
   end
 
   defp apply_action(socket, :index, _params) do

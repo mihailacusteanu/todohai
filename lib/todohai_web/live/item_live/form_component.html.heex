@@ -8,15 +8,20 @@
     phx-target={@myself}
     phx-change="validate"
     phx-submit="save">
-  
+
     <%= label f, :name %>
     <%= text_input f, :name %>
     <%= error_tag f, :name %>
-  
+
     <%= label f, :is_done %>
     <%= checkbox f, :is_done %>
     <%= error_tag f, :is_done %>
-  
+
+
+    <%= label f, :parent_id %>
+    <%= select f, :parent_id, @all_items %>
+    <%= error_tag f, :parent_id %>
+
     <div>
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>

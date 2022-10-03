@@ -6,6 +6,7 @@
       module={TodohaiWeb.ItemLive.FormComponent}
       id={@item.id}
       title={@page_title}
+      all_items={@all_items}
       action={@live_action}
       item={@item}
       return_to={Routes.item_show_path(@socket, :show, @item)}

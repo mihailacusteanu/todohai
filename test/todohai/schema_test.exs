@@ -12,7 +12,8 @@ defmodule Todohai.SchemaTest do
 
     test "list_items/0 returns all items" do
       item = item_fixture()
-      assert Schema.list_items() == [item]
+      item_ids = Schema.list_items() |> Enum.map(& &1.id)
+      assert item_ids == [item.id]
     end
 
     test "get_item!/1 returns the item with given id" do
