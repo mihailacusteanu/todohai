@@ -10,7 +10,6 @@ defmodule ListItemTableComponent do
     <thead>
     <tr>
       <th>Name</th>
-      <th>Is done</th>
       <th>Parent</th>
 
       <th></th>
@@ -26,8 +25,13 @@ defmodule ListItemTableComponent do
           <%= item.name %>
         <% end %>
         </td>
-        <td><%= item.is_done %></td>
-        <td><%= if not is_nil(item.parent_id) do item.parent.name else "-" end %></td>
+        <td>
+          <%= if not is_nil(item.parent_id) do %>
+            <%= live_redirect item.parent.name, to: Routes.item_show_path(@socket, :show, item.parent.id) %>
+          <% else  %>
+            -
+          <% end  %>
+        </td>
         <td>
           <span><%= live_redirect "Show", to: Routes.item_show_path(@socket, :show, item) %></span>
           <span><%= live_patch "Edit", to: Routes.item_index_path(@socket, :edit, item) %></span>
