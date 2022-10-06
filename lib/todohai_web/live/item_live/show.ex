@@ -15,11 +15,14 @@ defmodule TodohaiWeb.ItemLive.Show do
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
 
+    children = Schema.list_children_for_parent(id)
+
     socket =
       socket
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:item, Schema.get_item!(id))
       |> assign(:all_items, all_items)
+      |> assign(:children, children)
 
     {:noreply, socket}
   end

@@ -8,8 +8,8 @@ defmodule Todohai.Schema do
 
   alias Todohai.Schema.Item
 
-  @type item_id() :: Item.id()
-  @type item() :: %Item{}
+  @typep item_id() :: Item.id()
+  @typep item() :: %Item{}
 
   @doc """
   Returns the list of items.
@@ -22,6 +22,20 @@ defmodule Todohai.Schema do
   """
   def list_items do
     query = from i in Item, preload: [:parent]
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns the list of items with no parent.
+
+  ## Examples
+
+      iex> list_items_with_no_parent()
+      [%Item{parent_id: nil}, ...]
+
+  """
+  def list_items_with_no_parent do
+    query = from i in Item, where: is_nil(i.parent_id)
     Repo.all(query)
   end
 
@@ -53,10 +67,16 @@ defmodule Todohai.Schema do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_item(attr) :: {:ok, item()} | {:error, Ecto.Changeset.t()}
+        when attr: %{optional(:is_done) => boolean(), optional(:name) => String.t()}
   def create_item(attrs \\ %{}) do
-    %Item{}
-    |> Item.changeset(attrs)
-    |> Repo.insert()
+    if is_parent_not_in_attrs(attrs) do
+      %Item{}
+      |> Item.changeset(attrs)
+      |> Repo.insert()
+    else
+      add_child(attrs)
+    end
   end
 
   @doc """
@@ -117,7 +137,7 @@ defmodule Todohai.Schema do
   def list_children_for_parent(nil), do: []
 
   def list_children_for_parent(parent_id) do
-    Repo.all(from i in Item, where: i.parent_id == ^parent_id)
+    Repo.all(from i in Item, where: i.parent_id == ^parent_id, preload: [:parent])
   end
 
   @doc """
@@ -162,18 +182,18 @@ defmodule Todohai.Schema do
     Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == false)
   end
 
-  @spec add_child(item_id(), child_attrs) :: result
-        when result: {:ok, item()} | {:error, Ecto.Changeset.t()},
-             child_attrs: %{
-               required(:name) => String.t(),
-               required(:is_done) => boolean(),
-               required(:no_of_children) => integer(),
-               required(:no_of_done_children) => integer(),
-               required(:no_of_not_done_children) => integer(),
-               optional(:parent_id) => item_id()
-             }
-  def add_child(parent_id, child_attrs) do
-    child_attrs = Map.merge(child_attrs, %{parent_id: parent_id})
+  # @spec add_child(child_attrs) :: result
+  #       when result: {:ok, item()} | {:error, Ecto.Changeset.t()},
+  #            child_attrs: %{
+  #              required(:name) => String.t(),
+  #              required(:is_done) => boolean(),
+  #              optional(:no_of_children) => integer(),
+  #              optional(:no_of_done_children) => integer(),
+  #              optional(:no_of_not_done_children) => integer(),
+  #              optional(:parent_id) => item_id()
+  #            }
+  def add_child(child_attrs) do
+    parent_id = child_attrs["parent_id"] || child_attrs[:parent_id]
     parent_item = get_item!(parent_id)
 
     %Item{}
@@ -217,5 +237,20 @@ defmodule Todohai.Schema do
   """
   def change_item(%Item{} = item, attrs \\ %{}) do
     Item.changeset(item, attrs)
+  end
+
+  ############################## PRIVATE FUNCTIONS ##############################
+  @spec is_parent_not_in_attrs(child_attrs) :: true | false
+        when child_attrs: %{
+               optional(:name) => String.t(),
+               optional(:is_done) => boolean(),
+               optional(:no_of_children) => integer(),
+               optional(:no_of_done_children) => integer(),
+               optional(:no_of_not_done_children) => integer(),
+               optional(:parent_id) => item_id()
+             }
+  defp is_parent_not_in_attrs(attrs) do
+    (is_nil(attrs["parent_id"]) and is_nil(attrs[:parent_id])) || attrs["parent_id"] == "" ||
+      attrs[:parent_id] == ""
   end
 end

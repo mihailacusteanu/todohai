@@ -6,7 +6,7 @@ defmodule TodohaiWeb.ItemLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :items, list_items())}
+    {:ok, assign(socket, :items, list_items_with_no_parent())}
   end
 
   @impl true
@@ -20,6 +20,8 @@ defmodule TodohaiWeb.ItemLive.Index do
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
 
+    all_items = [{:none, nil} | all_items]
+
     socket
     |> assign(:page_title, "Edit Item")
     |> assign(:item, Schema.get_item!(id))
@@ -28,6 +30,7 @@ defmodule TodohaiWeb.ItemLive.Index do
 
   defp apply_action(socket, :new, _params) do
     all_items = Schema.list_items() |> Enum.map(fn item -> {item.name, item.id} end)
+    all_items = [{:none, nil} | all_items]
 
     socket
     |> assign(:page_title, "New Item")
@@ -46,10 +49,10 @@ defmodule TodohaiWeb.ItemLive.Index do
     item = Schema.get_item!(id)
     {:ok, _} = Schema.delete_item(item)
 
-    {:noreply, assign(socket, :items, list_items())}
+    {:noreply, assign(socket, :items, list_items_with_no_parent())}
   end
 
-  defp list_items do
-    Schema.list_items()
+  defp list_items_with_no_parent do
+    Schema.list_items_with_no_parent()
   end
 end
