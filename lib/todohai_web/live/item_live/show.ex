@@ -7,9 +7,11 @@ defmodule TodohaiWeb.ItemLive.Show do
   @impl true
   def mount(_params, _session, socket) do
     new_changeset = Schema.change_item(%Item{})
+
     socket =
       socket
       |> assign(:new_changeset, new_changeset)
+
     {:ok, socket}
     {:ok, socket}
   end
@@ -17,14 +19,12 @@ defmodule TodohaiWeb.ItemLive.Show do
   def handle_event("save", %{"item" => item_params}, socket) do
     id = item_params["input_id"]
     item = Schema.get_item!(id)
-    IO.inspect(item_params)
-socket = assign(socket, :item_to_update, item)
+
+    socket = assign(socket, :item_to_update, item)
     save_item(socket, :edit, item_params)
   end
 
   defp save_item(socket, :edit, item_params) do
-    IO.inspect(socket.assigns.item_to_update, label: "socket.assigns.item_to_update")
-    IO.inspect(item_params, label: "item_params")
     case Schema.update_item(socket.assigns.item_to_update, item_params) do
       {:ok, _item} ->
         redirect_route =
@@ -32,9 +32,9 @@ socket = assign(socket, :item_to_update, item)
             nil -> Routes.item_index_path(socket, :index)
             _ -> Routes.item_show_path(socket, :show, socket.assigns.item_to_update.parent_id)
           end
+
         {:noreply,
          socket
-
          |> push_redirect(to: redirect_route)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

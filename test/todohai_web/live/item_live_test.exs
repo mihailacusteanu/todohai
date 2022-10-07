@@ -75,7 +75,6 @@ defmodule TodohaiWeb.ItemLiveTest do
       assert html =~ item.name
     end
 
-
     test "saves new item on show page", %{conn: conn, item: parent_item} do
       {:ok, index_live, _html} = live(conn, Routes.item_show_path(conn, :show, parent_item))
 
