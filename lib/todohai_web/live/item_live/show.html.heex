@@ -1,5 +1,3 @@
-<h1>Show Item</h1>
-
 <%= if @live_action in [:edit] do %>
   <.modal return_to={Routes.item_show_path(@socket, :show, @item)}>
     <.live_component
@@ -14,27 +12,31 @@
   </.modal>
 <% end %>
 
-<ul>
-
-  <li>
-    <strong>Name:</strong>
-    <%= if @item.is_done do %>
-      <s><%= @item.name %></s>
-    <% else %>
-      <%= @item.name %>
+  <h1>
+    <strong>
+      <%= if @item.is_done do %>
+        <s><%= @item.name %></s>
+      <% else %>
+        <%= @item.name %>
+      <% end %>
+    </strong>
+  </h1>
+  <h5>
+    <%= if @item.no_of_done_children != 0 do %>
+        <strong>Children Progress:</strong>
+        <%= @item.no_of_done_children / @item.no_of_children * 100 %> %
     <% end %>
-  </li>
-  <%= if @item.no_of_done_children != 0 do %>
-    <li>
-      <strong>Children Progress:</strong>
-      <%= @item.no_of_done_children / @item.no_of_children * 100 %> %
-    </li>
-  <% end %>
+  </h5>
 
-</ul>
 
-<span><%= live_patch "Edit", to: Routes.item_show_path(@socket, :edit, @item), class: "button" %></span> |
-<span><%= live_redirect "Back", to: Routes.item_index_path(@socket, :index) %></span>
+<span><%= live_patch "Edit", to: Routes.item_show_path(@socket, :edit, @item), class: "button", class: "btn btn-primary"  %></span>
+<span>
+  <%= if not is_nil(@item.parent_id) do %>
+    <%= live_redirect "Back to parent", to: Routes.item_show_path(@socket, :show, @item.parent.id), class: "btn btn-primary"  %>
+  <% else  %>
+    <%= live_redirect "Back to root", to: Routes.item_index_path(@socket, :index), class: "btn btn-primary"  %>
+  <% end  %>
+</span>
 <%= if length(@children) != 0 do %>
   <.live_component module={ListItemTableComponent} id={"item_#{@item.id}"} items={@children} />
 <% end %>

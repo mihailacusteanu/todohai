@@ -20,7 +20,7 @@ defmodule TodohaiWeb.ItemLive.Show do
     socket =
       socket
       |> assign(:page_title, page_title(socket.assigns.live_action))
-      |> assign(:item, Schema.get_item!(id))
+      |> assign(:item, Schema.get_item_with_parent!(id))
       |> assign(:all_items, all_items)
       |> assign(:children, children)
 

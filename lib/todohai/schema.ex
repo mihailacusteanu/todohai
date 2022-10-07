@@ -56,6 +56,23 @@ defmodule Todohai.Schema do
   def get_item!(id), do: Repo.get!(Item, id)
 
   @doc """
+  Gets a single item with parent preloaded.
+
+  Raises `Ecto.NoResultsError` if the Item does not exist.
+
+  ## Examples
+
+      iex> get_item_with_parent!(123)
+      %Item{parent: %Item{}}
+
+      iex> get_item_with_parent!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_item_with_parent!(item_id()) :: item()
+  def get_item_with_parent!(id), do: Repo.get!(Item, id) |> Repo.preload(:parent)
+
+  @doc """
   Creates a item.
 
   ## Examples

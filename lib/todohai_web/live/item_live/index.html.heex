@@ -16,4 +16,4 @@
 <.live_component module={ListItemTableComponent} id={"index_page_list"} items={@items} />
 
 
-<span><%= live_patch "New Item", to: Routes.item_index_path(@socket, :new) %></span>
+<span><%= live_patch "New Item", to: Routes.item_index_path(@socket, :new), class: "btn btn-primary"  %></span>
