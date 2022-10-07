@@ -27,6 +27,12 @@ defmodule TodohaiWeb.ItemLive.Show do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event("close", %{}, socket) do
+    socket = push_patch(socket, to: Routes.item_show_path(socket, :show, socket.assigns.item))
+    {:noreply, socket}
+  end
+
   defp page_title(:show), do: "Show Item"
   defp page_title(:edit), do: "Edit Item"
 end

@@ -1,0 +1,30 @@
+@import "../node_modules/bootstrap/scss/bootstrap";
+body {
+    /* Add this */
+    padding-top: 6rem;
+}
+
+
+/* LiveView specific classes for your customizations */
+
+.phx-no-feedback.invalid-feedback,
+.phx-no-feedback .invalid-feedback {
+    display: none;
+}
+
+.phx-click-loading {
+    opacity: 0.5;
+    transition: opacity 1s ease-out;
+}
+
+.phx-disconnected {
+    cursor: wait;
+}
+
+.phx-disconnected * {
+    pointer-events: none;
+}
+
+.alert:empty {
+    display: none;
+}

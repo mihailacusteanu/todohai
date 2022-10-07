@@ -26,7 +26,12 @@ config :todohai, TodohaiWeb.Endpoint,
   secret_key_base: "nOHBNj+ak5mTbGw6iskisSSOuVI0+g/892wnKa7zv6RMdVeflPGn2g0chZkbluy6",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    sass: {
+      DartSass,
+      :install_and_run,
+      [:default, ~w(--embed-source-map --source-map-urls=absolute --watch)]
+    }
   ]
 
 # ## SSL Support

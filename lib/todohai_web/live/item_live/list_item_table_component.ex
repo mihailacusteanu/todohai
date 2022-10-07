@@ -6,18 +6,18 @@ defmodule ListItemTableComponent do
   def render(assigns) do
     ~H"""
 
-    <table>
+    <table class="table">
     <thead>
-    <tr>
-      <th>Name</th>
-      <th>Parent</th>
+    <tr scope="col">
+      <th scope="col">Name</th>
+      <th scope="col">Parent</th>
 
-      <th></th>
+      <th scope="col"></th>
     </tr>
     </thead>
     <tbody id="items">
     <%= for item <- @items do %>
-      <tr id={"item-#{item.id}"}>
+      <tr id={"item-#{item.id}"} scope="row">
         <td>
         <%= if item.is_done do %>
           <s><%= item.name %></s>

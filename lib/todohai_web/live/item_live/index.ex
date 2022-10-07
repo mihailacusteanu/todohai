@@ -52,6 +52,11 @@ defmodule TodohaiWeb.ItemLive.Index do
     {:noreply, assign(socket, :items, list_items_with_no_parent())}
   end
 
+  def handle_event("close", %{}, socket) do
+    socket = push_patch(socket, to: Routes.item_index_path(socket, :index))
+    {:noreply, socket}
+  end
+
   defp list_items_with_no_parent do
     Schema.list_items_with_no_parent()
   end

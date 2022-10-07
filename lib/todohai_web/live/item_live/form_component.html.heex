@@ -9,21 +9,26 @@
     phx-change="validate"
     phx-submit="save">
 
-    <%= label f, :name %>
-    <%= text_input f, :name %>
-    <%= error_tag f, :name %>
+    <div class="mb-3">
+      <%= label f, :name, class: "form-label" %>
+      <%= text_input f, :name, class: "form-control" %>
+      <%= error_tag f, :name %>
+    </div>
 
-    <%= label f, :is_done %>
-    <%= checkbox f, :is_done %>
-    <%= error_tag f, :is_done %>
+    <div class="mb-3">
+      <%= label f, :is_done, class: "form-label" %>
+      <%= checkbox f, :is_done, class: "form-check-label" %>
+      <%= error_tag f, :is_done %>
+    </div>
 
+    <div class="mb-3">
+      <%= label f, :parent_id, class: "form-label" %>
+      <%= select f, :parent_id, @all_items, class: "form-control" %>
+      <%= error_tag f, :parent_id %>
+    </div>
 
-    <%= label f, :parent_id %>
-    <%= select f, :parent_id, @all_items %>
-    <%= error_tag f, :parent_id %>
-
-    <div>
-      <%= submit "Save", phx_disable_with: "Saving..." %>
+    <div class="mb-3">
+      <%= submit "Save", phx_disable_with: "Saving...", disabled: !@changeset.valid?,  class: "btn btn-primary" %>
     </div>
   </.form>
 </div>
