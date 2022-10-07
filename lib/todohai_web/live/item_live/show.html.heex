@@ -12,7 +12,7 @@
   </.modal>
 <% end %>
 
-  <h1>
+  <h1 class="text-light">
     <strong>
       <%= if @item.is_done do %>
         <s><%= @item.name %></s>
@@ -37,6 +37,4 @@
     <%= live_redirect "Back to root", to: Routes.item_index_path(@socket, :index), class: "btn btn-primary"  %>
   <% end  %>
 </span>
-<%= if length(@children) != 0 do %>
-  <.live_component module={ListItemTableComponent} id={"item_#{@item.id}"} items={@children} />
-<% end %>
+<.live_component module={ListItemTableComponent} id={"item_#{@item.id}"} items={@children} parent_id={@item.id} new_changeset={@new_changeset} action={:new}/>

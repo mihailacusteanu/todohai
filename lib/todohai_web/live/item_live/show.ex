@@ -2,9 +2,15 @@ defmodule TodohaiWeb.ItemLive.Show do
   use TodohaiWeb, :live_view
 
   alias Todohai.Schema
+  alias Todohai.Schema.Item
 
   @impl true
   def mount(_params, _session, socket) do
+    new_changeset = Schema.change_item(%Item{})
+    socket =
+      socket
+      |> assign(:new_changeset, new_changeset)
+    {:ok, socket}
     {:ok, socket}
   end
 

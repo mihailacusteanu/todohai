@@ -13,43 +13,18 @@ defmodule TodohaiWeb.ItemLive.FormComponent do
      |> assign(:changeset, changeset)}
   end
 
+  # handle_event("validate", %{"item" => %{"name" => "d"}},
+
   @impl true
-  def handle_event("validate", %{"item" => item_params}, socket) do
+  def handle_event("validate", params, socket) do
+    IO.inspect("=== validate ===")
+    IO.inspect(params)
+    item_params = params
     changeset =
       socket.assigns.item
       |> Schema.change_item(item_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :changeset, changeset)}
-  end
-
-  def handle_event("save", %{"item" => item_params}, socket) do
-    save_item(socket, socket.assigns.action, item_params)
-  end
-
-  defp save_item(socket, :edit, item_params) do
-    case Schema.update_item(socket.assigns.item, item_params) do
-      {:ok, _item} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Item updated successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
-    end
-  end
-
-  defp save_item(socket, :new, item_params) do
-    case Schema.create_item(item_params) do
-      {:ok, _item} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Item created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
-    end
   end
 end

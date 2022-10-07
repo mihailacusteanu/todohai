@@ -6,7 +6,12 @@ defmodule TodohaiWeb.ItemLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :items, list_items_with_no_parent())}
+    new_changeset = Schema.change_item(%Item{})
+    socket =
+      socket
+      |> assign(:items, list_items_with_no_parent())
+      |> assign(:new_changeset, new_changeset)
+    {:ok, socket}
   end
 
   @impl true

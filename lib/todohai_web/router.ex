@@ -17,7 +17,7 @@ defmodule TodohaiWeb.Router do
   scope "/", TodohaiWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/", ItemLive.Index, :index
 
     live "/items", ItemLive.Index, :index
     live "/items/new", ItemLive.Index, :new
