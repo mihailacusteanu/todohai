@@ -17,12 +17,9 @@ defmodule TodohaiWeb.ItemLive.FormComponent do
 
   @impl true
   def handle_event("validate", params, socket) do
-    IO.inspect("=== validate ===")
-    IO.inspect(params)
-    item_params = params
     changeset =
       socket.assigns.item
-      |> Schema.change_item(item_params)
+      |> Schema.change_item(params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :changeset, changeset)}

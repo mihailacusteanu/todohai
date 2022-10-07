@@ -11,15 +11,11 @@ defmodule ListItemTableComponent do
 
 
 
-  def handle_event("validate", %{"item" => item_params} = params, socket) do
-    IO.inspect("=== validate ===")
-    IO.inspect(params)
-
+  def handle_event("validate", %{"item" => item_params}, socket) do
     new_changeset =
       %Item{}
       |> Schema.change_item(item_params)
       |> Map.put(:action, :validate)
-      |> IO.inspect(label: "new_changeset")
 
     {:noreply, assign(socket, :new_changeset, new_changeset)}
   end
@@ -44,13 +40,7 @@ defmodule ListItemTableComponent do
 
   defp save_item(socket, :new, item_params) do
     case Schema.create_item(item_params) do
-      {:ok, item} ->
-        IO.inspect("==== item ====")
-        IO.inspect(item)
-
-        IO.inspect("==== item_params ====")
-        IO.inspect(item_params)
-
+      {:ok, _item} ->
         redirect_route =
           case item_params["parent_id"] do
             nil -> Routes.item_index_path(socket, :index)
@@ -103,7 +93,7 @@ defmodule ListItemTableComponent do
       <%= text_input f, :name, class: "form-control justify-content-around", id: "seach-input",  placeholder: "todo 1.." %>
     </div>
     <div class="mb-3">
-      <%= submit "Save", phx_disable_with: "Saving...", disabled: !@new_changeset.valid?,  class: "btn btn-primary" %>
+      <%= submit "Save", phx_disable_with: "Saving...", disabled: !@new_changeset.valid?,  class: "btn btn-primary", id: "save-item" %>
     </div>
     </.form>
     </div>
