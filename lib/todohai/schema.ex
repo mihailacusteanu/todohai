@@ -21,7 +21,7 @@ defmodule Todohai.Schema do
 
   """
   def list_items do
-    query = from i in Item, preload: [:parent]
+    query = from i in Item, preload: [:parent], order_by: [asc: :inserted_at]
     Repo.all(query)
   end
 
@@ -35,7 +35,7 @@ defmodule Todohai.Schema do
 
   """
   def list_items_with_no_parent do
-    query = from i in Item, where: is_nil(i.parent_id)
+    query = from i in Item, where: is_nil(i.parent_id), order_by: [asc: :inserted_at]
     Repo.all(query)
   end
 
@@ -154,7 +154,7 @@ defmodule Todohai.Schema do
   def list_children_for_parent(nil), do: []
 
   def list_children_for_parent(parent_id) do
-    Repo.all(from i in Item, where: i.parent_id == ^parent_id, preload: [:parent])
+    Repo.all(from i in Item, where: i.parent_id == ^parent_id, preload: [:parent], order_by: [asc: :inserted_at])
   end
 
   @doc """
