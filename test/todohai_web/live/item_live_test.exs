@@ -4,9 +4,9 @@ defmodule TodohaiWeb.ItemLiveTest do
   import Phoenix.LiveViewTest
   import Todohai.SchemaFixtures
 
-  @create_attrs %{is_done: true, name: "some name"}
-  @update_attrs %{is_done: false, name: "some updated name"}
-  @invalid_attrs %{is_done: false, name: nil}
+  @create_attrs %{name: "some name"}
+  @update_attrs %{name: "some updated name"}
+  @invalid_attrs %{name: nil}
 
   defp create_item(_) do
     item = item_fixture()
@@ -23,27 +23,17 @@ defmodule TodohaiWeb.ItemLiveTest do
       assert html =~ item.name
     end
 
-    # test "saves new item", %{conn: conn} do
-    #   {:ok, index_live, _html} = live(conn, Routes.item_index_path(conn, :index))
+    test "saves new item on index page", %{conn: conn} do
+      {:ok, index_live, _html} = live(conn, Routes.item_index_path(conn, :index))
 
-    #   assert index_live |> element("a", "New Item") |> render_click() =~
-    #            "New Item"
+      {:ok, _, html} =
+        index_live
+        |> form("#item-form", item: @create_attrs)
+        |> render_submit()
+        |> follow_redirect(conn, Routes.item_index_path(conn, :index))
 
-    #   assert_patch(index_live, Routes.item_index_path(conn, :new))
-
-    #   assert index_live
-    #          |> form("#item-form", item: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
-
-    #   {:ok, _, html} =
-    #     index_live
-    #     |> form("#item-form", item: @create_attrs)
-    #     |> render_submit()
-    #     |> follow_redirect(conn, Routes.item_index_path(conn, :index))
-
-    #   assert html =~ "Item created successfully"
-    #   assert html =~ "some name"
-    # end
+      assert html =~ "some name"
+    end
 
     # test "updates item in listing", %{conn: conn, item: item} do
     #   {:ok, index_live, _html} = live(conn, Routes.item_index_path(conn, :index))
@@ -83,6 +73,19 @@ defmodule TodohaiWeb.ItemLiveTest do
 
       assert html =~ "Show Item"
       assert html =~ item.name
+    end
+
+
+    test "saves new item on show page", %{conn: conn, item: parent_item} do
+      {:ok, index_live, _html} = live(conn, Routes.item_show_path(conn, :show, parent_item))
+
+      {:ok, _, html} =
+        index_live
+        |> form("#item-form", item: @create_attrs)
+        |> render_submit()
+        |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent_item))
+
+      assert html =~ "some name"
     end
 
     # test "updates item within modal", %{conn: conn, item: item} do
