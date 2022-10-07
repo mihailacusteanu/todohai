@@ -22,7 +22,7 @@
     </strong>
   </h1>
   <h5  class="text-white">
-    <%= if @item.no_of_done_children != 0 do %>
+    <%= if @item.no_of_children != 0 do %>
         <strong>Children Progress:</strong>
         <%= @item.no_of_done_children / @item.no_of_children * 100 %> %
     <% end %>
