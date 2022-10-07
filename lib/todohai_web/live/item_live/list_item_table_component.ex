@@ -60,7 +60,7 @@ defmodule ListItemTableComponent do
     <div id="list_items">
       <%= for item <- @items do %>
         <li class="list-group-item" style="border-radius: 0px;" id={"item-#{item.id}"}>
-          <div class="form-check">
+          <div class="form-check content" >
           <.form
             let={f}
             for={Item.changeset(item, %{})}
@@ -78,13 +78,14 @@ defmodule ListItemTableComponent do
                   <% else %>
                     <%= item.name %>
                   <% end %>
-                  <%= if item.no_of_children != 0 do %>
-                    <%= round(item.no_of_done_children / item.no_of_children * 100) %> %
-                <% end %>
+                  <% x = if item.no_of_children != 0 do round(item.no_of_done_children / item.no_of_children * 100) else 0 end %>
                 </span>
               </a>
             </label>
           </div>
+          <div class="progress">
+              <div class="progress-bar" role="progressbar" style={"width: #{x}%"} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </li>
       <% end %>
 
