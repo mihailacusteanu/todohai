@@ -78,6 +78,9 @@ defmodule ListItemTableComponent do
                   <% else %>
                     <%= item.name %>
                   <% end %>
+                  <%= if item.no_of_children != 0 do %>
+                    <%= round(item.no_of_done_children / item.no_of_children * 100) %> %
+                <% end %>
                 </span>
               </a>
             </label>
