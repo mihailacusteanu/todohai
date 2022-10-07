@@ -9,8 +9,6 @@ defmodule ListItemTableComponent do
   alias Todohai.Schema
   alias Todohai.Schema.Item
 
-
-
   def handle_event("validate", %{"item" => item_params}, socket) do
     new_changeset =
       %Item{}
@@ -49,7 +47,7 @@ defmodule ListItemTableComponent do
 
         {:noreply,
          socket
-        #  |> put_flash(:info, "Item created successfully")
+         #  |> put_flash(:info, "Item created successfully")
          |> push_redirect(to: redirect_route)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -63,7 +61,15 @@ defmodule ListItemTableComponent do
       <%= for item <- @items do %>
         <li class="list-group-item" style="border-radius: 0px;" id={"item-#{item.id}"}>
           <div class="form-check">
-            <input class="form-check-input checkbox" type="checkbox" id="formCheck-1">
+          <.form
+            let={f}
+            for={Item.changeset(item, %{})}
+            id="item-form-checkbox"
+            phx-change="save">
+            <%= hidden_input f, :input_id, value: item.id %>
+            <%= checkbox f, :is_done, class: "form-check-input checkbox" %>
+            </.form>
+
             <label class="form-check-label" for="formCheck-1">
               <a href={Routes.item_show_path(@socket, :show, item)} data-phx-link-state="push" data-phx-link="redirect">
                 <span style="color: rgb(255, 255, 255);">
