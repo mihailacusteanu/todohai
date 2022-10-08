@@ -2,6 +2,7 @@ defmodule TodohaiWeb.LiveHelpers do
   @moduledoc false
   import Phoenix.LiveView
   import Phoenix.LiveView.Helpers
+  import Phoenix.Component
 
   alias Phoenix.LiveView.JS
 
