@@ -7,14 +7,22 @@ defmodule TodohaiWeb.ItemLive.Show do
   @impl true
   def mount(_params, _session, socket) do
     new_changeset = Schema.change_item(%Item{})
-
+    socket.assigns |> IO.inspect(label: "socket.assigns")
     socket =
       socket
       |> assign(:new_changeset, new_changeset)
 
     {:ok, socket}
-    {:ok, socket}
   end
+
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    item = Schema.get_item!(id)
+    {:ok, _} = Schema.delete_item(item)
+
+    {:noreply, assign(socket, :children, Schema.list_children_for_parent(socket.assigns.item.id))}
+  end
+
 
   def handle_event("save", %{"item" => item_params}, socket) do
     id = item_params["input_id"]
