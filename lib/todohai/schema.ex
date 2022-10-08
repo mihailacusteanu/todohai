@@ -161,7 +161,9 @@ defmodule Todohai.Schema do
       {:ok, item} ->
         update_parent_after_delete_child(item)
         {:ok, item}
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -270,8 +272,7 @@ defmodule Todohai.Schema do
 
   def build_parent_attrs_after_add_child(
         %{is_done: false} = _child,
-        %{no_of_children: no_of_children} =
-          _parent
+        %{no_of_children: no_of_children} = _parent
       ),
       do: %{
         no_of_children: no_of_children + 1
@@ -327,18 +328,29 @@ defmodule Todohai.Schema do
   end
 
   defp update_parent_after_delete_child(%{parent_id: nil}), do: nil
+
   defp update_parent_after_delete_child(child) do
-    parent = case Ecto.assoc_loaded?(child.parent) do
-      true -> child.parent
-      false ->
-        get_item!(child.parent_id)
-    end
-    parent_new_attrs =
-      case child.is_done do
-        true -> %{no_of_children: parent.no_of_children - 1, no_of_done_children: parent.no_of_done_children - 1}
-        false -> %{no_of_children: parent.no_of_children - 1}
+    parent =
+      case Ecto.assoc_loaded?(child.parent) do
+        true ->
+          child.parent
+
+        false ->
+          get_item!(child.parent_id)
       end
 
-      {:ok, _parent_item} = update_item(parent, parent_new_attrs)
+    parent_new_attrs =
+      case child.is_done do
+        true ->
+          %{
+            no_of_children: parent.no_of_children - 1,
+            no_of_done_children: parent.no_of_done_children - 1
+          }
+
+        false ->
+          %{no_of_children: parent.no_of_children - 1}
+      end
+
+    {:ok, _parent_item} = update_item(parent, parent_new_attrs)
   end
 end

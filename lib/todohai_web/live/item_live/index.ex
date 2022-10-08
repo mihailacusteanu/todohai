@@ -71,7 +71,7 @@ defmodule TodohaiWeb.ItemLive.Index do
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
 
-    all_items = [{:none, nil} | all_items]
+    all_items = [{"-", nil} | all_items]
 
     socket
     |> assign(:page_title, "Edit Item")
@@ -81,7 +81,7 @@ defmodule TodohaiWeb.ItemLive.Index do
 
   defp apply_action(socket, :new, _params) do
     all_items = Schema.list_items() |> Enum.map(fn item -> {item.name, item.id} end)
-    all_items = [{:none, nil} | all_items]
+    all_items = [{"-", nil} | all_items]
 
     socket
     |> assign(:page_title, "New Item")

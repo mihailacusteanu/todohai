@@ -7,6 +7,7 @@ defmodule TodohaiWeb.ItemLive.Show do
   @impl true
   def mount(_params, _session, socket) do
     new_changeset = Schema.change_item(%Item{})
+
     socket =
       socket
       |> assign(:new_changeset, new_changeset)
@@ -23,9 +24,9 @@ defmodule TodohaiWeb.ItemLive.Show do
       socket
       |> assign(:children, Schema.list_children_for_parent(socket.assigns.item.id))
       |> assign(:item, Schema.get_item_with_parent!(socket.assigns.item.id))
+
     {:noreply, socket}
   end
-
 
   def handle_event("save", %{"item" => item_params}, socket) do
     id = item_params["input_id"]
@@ -78,6 +79,8 @@ defmodule TodohaiWeb.ItemLive.Show do
       Schema.list_items()
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
+
+    all_items = [{"-", nil} | all_items]
 
     children = Schema.list_children_for_parent(id)
 
