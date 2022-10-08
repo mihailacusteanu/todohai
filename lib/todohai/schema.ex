@@ -235,7 +235,6 @@ defmodule Todohai.Schema do
   #              required(:is_done) => boolean(),
   #              optional(:no_of_children) => integer(),
   #              optional(:no_of_done_children) => integer(),
-  #              optional(:no_of_not_done_children) => integer(),
   #              optional(:parent_id) => item_id()
   #            }
   def add_child(child_attrs) do
@@ -266,35 +265,30 @@ defmodule Todohai.Schema do
 
   def build_parent_attrs_after_add_child(
         %{is_done: false} = _child,
-        %{no_of_children: no_of_children, no_of_not_done_children: no_of_not_done_children} =
+        %{no_of_children: no_of_children} =
           _parent
       ),
       do: %{
-        no_of_children: no_of_children + 1,
-        no_of_not_done_children: no_of_not_done_children + 1
+        no_of_children: no_of_children + 1
       }
 
   def build_parent_attrs_after_update_child(
         %{is_done: true} = _child,
         %{
-          no_of_done_children: no_of_done_children,
-          no_of_not_done_children: no_of_not_done_children
+          no_of_done_children: no_of_done_children
         } = _parent
       ),
       do: %{
-        no_of_done_children: no_of_done_children + 1,
-        no_of_not_done_children: no_of_not_done_children - 1
+        no_of_done_children: no_of_done_children + 1
       }
 
   def build_parent_attrs_after_update_child(
         %{is_done: false} = _child,
         %{
-          no_of_not_done_children: no_of_not_done_children,
           no_of_done_children: no_of_done_children
         } = _parent
       ),
       do: %{
-        no_of_not_done_children: no_of_not_done_children + 1,
         no_of_done_children: no_of_done_children - 1
       }
 
@@ -320,7 +314,6 @@ defmodule Todohai.Schema do
                optional(:is_done) => boolean(),
                optional(:no_of_children) => integer(),
                optional(:no_of_done_children) => integer(),
-               optional(:no_of_not_done_children) => integer(),
                optional(:parent_id) => item_id()
              }
   defp is_parent_not_in_attrs(attrs) do

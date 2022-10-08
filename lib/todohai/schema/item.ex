@@ -5,7 +5,7 @@ defmodule Todohai.Schema.Item do
 
   @type id() :: integer()
 
-  @required_fields ~w(name is_done no_of_children no_of_done_children no_of_not_done_children)a
+  @required_fields ~w(name is_done no_of_children no_of_done_children)a
   @optional_fields ~w(parent_id)a
 
   schema "items" do
@@ -13,7 +13,6 @@ defmodule Todohai.Schema.Item do
     field :name, :string
     field :no_of_children, :integer, default: 0
     field :no_of_done_children, :integer, default: 0
-    field :no_of_not_done_children, :integer, default: 0
     belongs_to :parent, __MODULE__
 
     timestamps()

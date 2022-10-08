@@ -70,14 +70,12 @@ defmodule Todohai.ItemTest do
 
       assert Schema.get_item!(parent_item.id).no_of_children == 1
       assert Schema.get_item!(parent_item.id).no_of_done_children == 1
-      assert Schema.get_item!(parent_item.id).no_of_not_done_children == 0
 
       {:ok, child_item2} =
         Schema.add_child(%{name: "child item2", is_done: false, parent_id: parent_item.id})
 
       assert Schema.get_item!(parent_item.id).no_of_children == 2
       assert Schema.get_item!(parent_item.id).no_of_done_children == 1
-      assert Schema.get_item!(parent_item.id).no_of_not_done_children == 1
 
       Schema.delete_item(child_item1)
       Schema.delete_item(child_item2)
