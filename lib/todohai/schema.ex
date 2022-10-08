@@ -157,7 +157,12 @@ defmodule Todohai.Schema do
 
   """
   def delete_item(%Item{} = item) do
-    Repo.delete(item)
+    case Repo.delete(item) do
+      {:ok, item} ->
+        update_parent_after_delete_child(item)
+        {:ok, item}
+      error -> error
+    end
   end
 
   @doc """
@@ -319,5 +324,21 @@ defmodule Todohai.Schema do
   defp is_parent_not_in_attrs(attrs) do
     (is_nil(attrs["parent_id"]) and is_nil(attrs[:parent_id])) || attrs["parent_id"] == "" ||
       attrs[:parent_id] == ""
+  end
+
+  defp update_parent_after_delete_child(%{parent_id: nil}), do: nil
+  defp update_parent_after_delete_child(child) do
+    parent = case Ecto.assoc_loaded?(child.parent) do
+      true -> child.parent
+      false ->
+        get_item!(child.parent_id)
+    end
+    parent_new_attrs =
+      case child.is_done do
+        true -> %{no_of_children: parent.no_of_children - 1, no_of_done_children: parent.no_of_done_children - 1}
+        false -> %{no_of_children: parent.no_of_children - 1}
+      end
+
+      {:ok, _parent_item} = update_item(parent, parent_new_attrs)
   end
 end

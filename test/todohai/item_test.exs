@@ -92,8 +92,24 @@ defmodule Todohai.ItemTest do
                {:error, {:update_item_error, "Parent item can't be child item"}}
 
       Schema.update_item(item2, %{parent_id: nil})
-      Schema.delete_item(item1)
       Schema.delete_item(item2)
+      Schema.delete_item(item1)
+    end
+  end
+
+  describe "delte a child" do
+    test "and update the number of childs" do
+      parent_item = item_fixture()
+      child_item1 = item_fixture(%{parent_id: parent_item.id, is_done: true})
+      child_item2 = item_fixture(%{parent_id: parent_item.id, is_done: false})
+      assert Schema.get_item!(parent_item.id).no_of_children == 2
+      assert Schema.get_item!(parent_item.id).no_of_done_children == 1
+      Schema.delete_item(child_item2)
+      assert Schema.get_item!(parent_item.id).no_of_children == 1
+      assert Schema.get_item!(parent_item.id).no_of_done_children == 1
+      Schema.delete_item(child_item1)
+      assert Schema.get_item!(parent_item.id).no_of_children == 0
+      assert Schema.get_item!(parent_item.id).no_of_done_children == 0
     end
   end
 end

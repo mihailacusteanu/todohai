@@ -14,7 +14,6 @@ defmodule TodohaiWeb.ItemLive.FormComponent do
   end
 
   def handle_event("save", %{"item" => item_params}, socket) do
-    socket.assigns |> IO.inspect(label: "socket.assigns")
     socket = assign(socket, :item_to_update, socket.assigns.item)
     save_item(socket, :edit, item_params)
   end
