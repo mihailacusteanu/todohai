@@ -16,12 +16,12 @@ defmodule Todohai.Schema do
 
   ## Examples
 
-      iex> list_items()
+      iex> list_items(user_id)
       [%Item{}, ...]
 
   """
-  def list_items do
-    query = from i in Item, preload: [:parent], order_by: [asc: :inserted_at]
+  def list_items(user_id) do
+    query = from i in Item, preload: [:parent], order_by: [asc: :inserted_at], where: i.user_id == ^user_id
     Repo.all(query)
   end
 
@@ -30,12 +30,12 @@ defmodule Todohai.Schema do
 
   ## Examples
 
-      iex> list_items_with_no_parent()
+      iex> list_items_with_no_parent(user_id)
       [%Item{parent_id: nil}, ...]
 
   """
-  def list_items_with_no_parent do
-    query = from i in Item, where: is_nil(i.parent_id), order_by: [asc: :inserted_at]
+  def list_items_with_no_parent(user_id) do
+    query = from i in Item, where: is_nil(i.parent_id), order_by: [asc: :inserted_at], where: i.user_id == ^user_id
     Repo.all(query)
   end
 

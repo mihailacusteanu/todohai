@@ -37,4 +37,4 @@
     <%= live_redirect "Back to root", to: Routes.item_index_path(@socket, :index), class: "btn btn-primary"  %>
   <% end  %>
 </span>
-<.live_component module={ListItemTableComponent} id={"item_#{@item.id}"} items={@children} parent_id={@item.id} new_changeset={@new_changeset} action={:new}/>
+<.live_component module={ListItemTableComponent} id={"item_#{@item.id}"} items={@children} parent_id={@item.id} new_changeset={@new_changeset} action={:new} user_id={@current_user.id}/>

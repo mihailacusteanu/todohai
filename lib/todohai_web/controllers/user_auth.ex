@@ -91,6 +91,8 @@ defmodule TodohaiWeb.UserAuth do
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
+    conn = put_session(conn, :current_user, user)
+
     assign(conn, :current_user, user)
   end
 

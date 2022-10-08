@@ -10,6 +10,8 @@ defmodule ListItemTableComponent do
   alias Todohai.Schema.Item
 
   def handle_event("validate", %{"item" => item_params}, socket) do
+    item_params = Map.put(item_params, "user_id", socket.assigns.user_id)
+
     new_changeset =
       %Item{}
       |> Schema.change_item(item_params)
@@ -20,6 +22,9 @@ defmodule ListItemTableComponent do
 
   def handle_event("save", %{"item" => item_params}, socket) do
     item_params = Map.merge(item_params, %{"parent_id" => socket.assigns.parent_id})
+
+    item_params = Map.put(item_params, "user_id", socket.assigns.user_id)
+
     save_item(socket, :new, item_params)
   end
 

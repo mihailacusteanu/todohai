@@ -5,13 +5,14 @@ defmodule TodohaiWeb.ItemLive.Index do
   alias Todohai.Schema.Item
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     new_changeset = Schema.change_item(%Item{})
 
     socket =
       socket
-      |> assign(:items, list_items_with_no_parent())
+      |> assign(:items, list_items_with_no_parent(session["current_user"].id))
       |> assign(:new_changeset, new_changeset)
+      |> assign(:current_user, session["current_user"])
 
     {:ok, socket}
   end
@@ -67,7 +68,7 @@ defmodule TodohaiWeb.ItemLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     all_items =
-      Schema.list_items()
+      Schema.list_items(socket.assigns.current_user.id)
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
 
@@ -80,7 +81,7 @@ defmodule TodohaiWeb.ItemLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    all_items = Schema.list_items() |> Enum.map(fn item -> {item.name, item.id} end)
+    all_items = Schema.list_items(socket.assigns.current_user.id) |> Enum.map(fn item -> {item.name, item.id} end)
     all_items = [{"-", nil} | all_items]
 
     socket
@@ -100,7 +101,7 @@ defmodule TodohaiWeb.ItemLive.Index do
     item = Schema.get_item!(id)
     {:ok, _} = Schema.delete_item(item)
 
-    {:noreply, assign(socket, :items, list_items_with_no_parent())}
+    {:noreply, assign(socket, :items, list_items_with_no_parent(socket.assigns.current_user.id))}
   end
 
   def handle_event("close", %{}, socket) do
@@ -108,7 +109,7 @@ defmodule TodohaiWeb.ItemLive.Index do
     {:noreply, socket}
   end
 
-  defp list_items_with_no_parent do
-    Schema.list_items_with_no_parent()
+  defp list_items_with_no_parent(user_id) do
+    Schema.list_items_with_no_parent(user_id)
   end
 end

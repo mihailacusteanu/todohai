@@ -14,5 +14,5 @@
 <% end %>
 
 <ul class="list-group d-flex justify-content-center align-items-center" style="border-bottom-style: none;border-bottom-color: var(--bs-list-group-border-color);">
-  <.live_component module={ListItemTableComponent} id={"index_page_list"} items={@items} parent_id={nil} new_changeset={@new_changeset} action={:new}/>
+  <.live_component module={ListItemTableComponent} id={"index_page_list"} items={@items} parent_id={nil} new_changeset={@new_changeset} action={:new} user_id={@current_user.id}/>
 </ul>

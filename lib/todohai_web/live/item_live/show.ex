@@ -5,12 +5,13 @@ defmodule TodohaiWeb.ItemLive.Show do
   alias Todohai.Schema.Item
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     new_changeset = Schema.change_item(%Item{})
 
     socket =
       socket
       |> assign(:new_changeset, new_changeset)
+      |> assign(:current_user, session["current_user"])
 
     {:ok, socket}
   end
@@ -76,7 +77,7 @@ defmodule TodohaiWeb.ItemLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     all_items =
-      Schema.list_items()
+      Schema.list_items(socket.assigns.current_user.id)
       |> Enum.reject(fn it -> "#{it.id}" == id end)
       |> Enum.map(fn item -> {item.name, item.id} end)
 

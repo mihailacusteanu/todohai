@@ -19,4 +19,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Source: https://github.com/phoenixframework/phoenix
 
 
-UPDATE no of done children after child update
+app/bin/todohai remote
+
+
+show page should use get_item/2 which would depend on id and user_id

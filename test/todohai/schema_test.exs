@@ -12,7 +12,7 @@ defmodule Todohai.SchemaTest do
 
     test "list_items/0 returns all items" do
       item = item_fixture()
-      item_ids = Schema.list_items() |> Enum.map(& &1.id)
+      item_ids = Schema.list_items(item.user_id) |> Enum.map(& &1.id)
       assert item_ids == [item.id]
     end
 
@@ -22,7 +22,8 @@ defmodule Todohai.SchemaTest do
     end
 
     test "create_item/1 with valid data creates a item" do
-      valid_attrs = %{is_done: true, name: "some name"}
+      user = Todohai.AccountsFixtures.user_fixture()
+      valid_attrs = %{is_done: true, name: "some name", user_id: user.id}
 
       assert {:ok, %Item{} = item} = Schema.create_item(valid_attrs)
       assert item.is_done == true
