@@ -9,6 +9,7 @@ defmodule Todohai.SchemaFixtures do
   """
   def item_fixture(attrs \\ %{}) do
     user = Todohai.AccountsFixtures.user_fixture()
+
     {:ok, item} =
       attrs
       |> Enum.into(%{

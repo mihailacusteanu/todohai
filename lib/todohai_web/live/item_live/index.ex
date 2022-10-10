@@ -81,7 +81,10 @@ defmodule TodohaiWeb.ItemLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    all_items = Schema.list_items(socket.assigns.current_user.id) |> Enum.map(fn item -> {item.name, item.id} end)
+    all_items =
+      Schema.list_items(socket.assigns.current_user.id)
+      |> Enum.map(fn item -> {item.name, item.id} end)
+
     all_items = [{"-", nil} | all_items]
 
     socket

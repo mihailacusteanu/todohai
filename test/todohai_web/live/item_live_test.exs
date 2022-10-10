@@ -4,21 +4,24 @@ defmodule TodohaiWeb.ItemLiveTest do
   import Phoenix.LiveViewTest
   import Todohai.SchemaFixtures
 
+  alias Todohai.Schema
+
   @create_attrs %{name: "some name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 
-  defp create_item(_) do
-    item = item_fixture()
+  defp create_item(%{user: user}) do
+    item = item_fixture(user_id: user.id)
     %{item: item}
   end
+
+  setup :register_and_log_in_user
 
   describe "Index" do
     setup [:create_item]
 
-    test "lists all items", %{conn: conn, item: item} do
-      {:ok, _index_live, html} = live(conn, Routes.item_index_path(conn, :index))
-
+    test "lists all items", %{conn: conn, item: item, user: user} do
+      {:ok, index_live, html} = live(conn, Routes.item_index_path(conn, :index))
       assert html =~ "Listing Items"
       assert html =~ item.name
     end
@@ -28,7 +31,7 @@ defmodule TodohaiWeb.ItemLiveTest do
 
       {:ok, _, html} =
         index_live
-        |> form("#item-form", item: @create_attrs)
+        |> form("#item-form-add-item", item: @create_attrs)
         |> render_submit()
         |> follow_redirect(conn, Routes.item_index_path(conn, :index))
 
@@ -80,7 +83,7 @@ defmodule TodohaiWeb.ItemLiveTest do
 
       {:ok, _, html} =
         index_live
-        |> form("#item-form", item: @create_attrs)
+        |> form("#item-form-add-item", item: @create_attrs)
         |> render_submit()
         |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent_item))
 
@@ -108,5 +111,69 @@ defmodule TodohaiWeb.ItemLiveTest do
     #   assert html =~ "Item updated successfully"
     #   assert html =~ "some updated name"
     # end
+  end
+
+  describe "update child name on show page" do
+    test "and parent's children progress stay the same", %{conn: conn, user: user} do
+      parent = item_fixture(%{user_id: user.id})
+      child1 = item_fixture(%{parent_id: parent.id, is_done: true, user_id: user.id})
+      child2 = item_fixture(%{parent_id: parent.id, is_done: false, user_id: user.id})
+      assert Schema.get_item!(parent.id).no_of_children == 2
+      assert Schema.get_item!(parent.id).no_of_done_children == 1
+
+      {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+
+      assert show_parent_live |> element("a#edit-item-#{child1.id}") |> render_click() =~
+               "Edit Item"
+
+      {:ok, _, html} =
+        show_parent_live
+        |> form("#item-form", item: %{name: "new child1 item name"})
+        |> render_submit()
+        |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent.id))
+
+      assert html =~ "new child1 item name"
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+
+      {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
+
+      assert show_parent_live |> element("a#edit-item-#{child2.id}") |> render_click() =~
+               "Edit Item"
+
+      {:ok, _, html} =
+        show_parent_live
+        |> form("#item-form", item: %{name: "new child2 item name"})
+        |> render_submit()
+        |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent.id))
+
+      assert html =~ "new child2 item name"
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+      {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+    end
+  end
+
+  describe "delete child on parent's show page" do
+    test "and parent's children progress stay the same", %{conn: conn, user: user} do
+      parent = item_fixture(%{user_id: user.id})
+      child1 = item_fixture(%{parent_id: parent.id, is_done: true, user_id: user.id})
+      child2 = item_fixture(%{parent_id: parent.id, is_done: false, user_id: user.id})
+      assert Schema.get_item!(parent.id).no_of_children == 2
+      assert Schema.get_item!(parent.id).no_of_done_children == 1
+
+      {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+
+      assert show_parent_live |> element("svg#delete-item-#{child1.id}") |> render_click()
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Schema.get_item!(child1.id)
+      end
+
+      refute has_element?(show_parent_live, "svg#delete-item-#{child1.id}")
+
+      assert html =~ "Children Progress:</strong>\n50.0 %"
+    end
   end
 end

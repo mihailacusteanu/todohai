@@ -21,7 +21,12 @@ defmodule Todohai.Schema do
 
   """
   def list_items(user_id) do
-    query = from i in Item, preload: [:parent], order_by: [asc: :inserted_at], where: i.user_id == ^user_id
+    query =
+      from i in Item,
+        preload: [:parent],
+        order_by: [asc: :inserted_at],
+        where: i.user_id == ^user_id
+
     Repo.all(query)
   end
 
@@ -35,7 +40,12 @@ defmodule Todohai.Schema do
 
   """
   def list_items_with_no_parent(user_id) do
-    query = from i in Item, where: is_nil(i.parent_id), order_by: [asc: :inserted_at], where: i.user_id == ^user_id
+    query =
+      from i in Item,
+        where: is_nil(i.parent_id),
+        order_by: [asc: :inserted_at],
+        where: i.user_id == ^user_id
+
     Repo.all(query)
   end
 
@@ -120,7 +130,7 @@ defmodule Todohai.Schema do
         |> Repo.update()
         |> case do
           {:ok, item} ->
-            update_parent(item, attrs)
+            update_no_of_children_for_parent(item)
             {:ok, item}
 
           error ->
@@ -143,6 +153,23 @@ defmodule Todohai.Schema do
   end
 
   def update_parent(_child, _child_attrs), do: nil
+
+  @spec update_no_of_children_for_parent(item()) :: item()
+  def update_no_of_children_for_parent(%{parent_id: nil, user_id: user_id}), do: nil
+
+  def update_no_of_children_for_parent(%{parent_id: parent_id, user_id: user_id}) do
+    all_children =
+      Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.user_id == ^user_id)
+
+    no_of_children = Enum.count(all_children)
+    no_of_done_children = Enum.count(all_children, fn it -> it.is_done == true end)
+
+    get_item!(parent_id)
+    |> update_item(%{
+      "no_of_children" => no_of_children,
+      "no_of_done_children" => no_of_done_children
+    })
+  end
 
   @doc """
   Deletes a item.

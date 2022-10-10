@@ -59,20 +59,36 @@ defmodule Todohai.ItemTest do
     end
 
     test "and get item with parent_id", %{parent_item: parent_item} do
-      {:ok, child_item} = Schema.add_child(%{parent_id: parent_item.id, name: "child item", user_id: parent_item.user_id})
+      {:ok, child_item} =
+        Schema.add_child(%{
+          parent_id: parent_item.id,
+          name: "child item",
+          user_id: parent_item.user_id
+        })
+
       assert Schema.get_item!(child_item.id).parent_id == parent_item.id
       Schema.delete_item(child_item)
     end
 
     test "and update parent's no_of_children", %{parent_item: parent_item} do
       {:ok, child_item1} =
-        Schema.add_child(%{name: "child item1", is_done: true, parent_id: parent_item.id, user_id: parent_item.user_id})
+        Schema.add_child(%{
+          name: "child item1",
+          is_done: true,
+          parent_id: parent_item.id,
+          user_id: parent_item.user_id
+        })
 
       assert Schema.get_item!(parent_item.id).no_of_children == 1
       assert Schema.get_item!(parent_item.id).no_of_done_children == 1
 
       {:ok, child_item2} =
-        Schema.add_child(%{name: "child item2", is_done: false, parent_id: parent_item.id, user_id: parent_item.user_id})
+        Schema.add_child(%{
+          name: "child item2",
+          is_done: false,
+          parent_id: parent_item.id,
+          user_id: parent_item.user_id
+        })
 
       assert Schema.get_item!(parent_item.id).no_of_children == 2
       assert Schema.get_item!(parent_item.id).no_of_done_children == 1
@@ -97,7 +113,7 @@ defmodule Todohai.ItemTest do
     end
   end
 
-  describe "delte a child" do
+  describe "delete a child" do
     test "and update the number of childs" do
       parent_item = item_fixture()
       child_item1 = item_fixture(%{parent_id: parent_item.id, is_done: true})
