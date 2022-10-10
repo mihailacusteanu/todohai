@@ -122,7 +122,7 @@ defmodule TodohaiWeb.ItemLiveTest do
       assert Schema.get_item!(parent.id).no_of_done_children == 1
 
       {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
 
       assert show_parent_live |> element("a#edit-item-#{child1.id}") |> render_click() =~
                "Edit Item"
@@ -134,7 +134,7 @@ defmodule TodohaiWeb.ItemLiveTest do
         |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent.id))
 
       assert html =~ "new child1 item name"
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
 
       {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
 
@@ -148,9 +148,9 @@ defmodule TodohaiWeb.ItemLiveTest do
         |> follow_redirect(conn, Routes.item_show_path(conn, :show, parent.id))
 
       assert html =~ "new child2 item name"
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
       {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
     end
   end
 
@@ -163,7 +163,7 @@ defmodule TodohaiWeb.ItemLiveTest do
       assert Schema.get_item!(parent.id).no_of_done_children == 1
 
       {:ok, show_parent_live, html} = live(conn, Routes.item_show_path(conn, :show, parent.id))
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
 
       assert show_parent_live |> element("svg#delete-item-#{child1.id}") |> render_click()
 
@@ -173,7 +173,7 @@ defmodule TodohaiWeb.ItemLiveTest do
 
       refute has_element?(show_parent_live, "svg#delete-item-#{child1.id}")
 
-      assert html =~ "Children Progress:</strong>\n50.0 %"
+      assert html =~ "Children Progress:</strong>\n50 %"
     end
   end
 end
