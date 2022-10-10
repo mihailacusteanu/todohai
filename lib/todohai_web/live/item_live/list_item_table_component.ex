@@ -28,6 +28,14 @@ defmodule ListItemTableComponent do
     save_item(socket, :new, item_params)
   end
 
+  defp get_class_for_progress_bar(progress_percentage) do
+    cond do
+      progress_percentage == 100 -> "bg-success"
+      progress_percentage >= 33 -> "bg-warning"
+      true -> "bg-danger"
+    end
+  end
+
   # defp save_item(socket, :edit, item_params) do
   #   case Schema.update_item(socket.assigns.item, item_params) do
   #     {:ok, _item} ->
@@ -83,12 +91,13 @@ defmodule ListItemTableComponent do
                     <% else %>
                       <%= item.name %>
                     <% end %>
-                    <% x = if item.no_of_children != 0 do round(item.no_of_done_children / item.no_of_children * 100) else 0 end %>
+                    <% progress_percentage = if item.no_of_children != 0 do round(item.no_of_done_children / item.no_of_children * 100) else 0 end %>
                   </span>
                 </a>
               </label>
             </div>
             <div>
+
               <.link patch={ Routes.item_show_path(@socket, :edit, item)} class="text-white" id={"edit-item-#{item.id}"}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                   <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
@@ -101,7 +110,7 @@ defmodule ListItemTableComponent do
             </div>
           </div>
           <div class="progress">
-            <div class="progress-bar" role="progressbar" style={"width: #{x}%"} aria-valuemin="0" aria-valuemax="100"></div>
+            <div class={"progress-bar #{get_class_for_progress_bar(progress_percentage)}"} role="progressbar" style={"width: #{progress_percentage}%; "} aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </li>
       <% end %>
