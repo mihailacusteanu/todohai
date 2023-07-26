@@ -6,7 +6,7 @@ defmodule Todohai.Schema.Item do
   @type id() :: integer()
 
   @required_fields ~w(name is_done no_of_children no_of_done_children user_id)a
-  @optional_fields ~w(parent_id)a
+  @optional_fields ~w(parent_id deleted_at)a
 
   schema "items" do
     field :is_done, :boolean, default: false
@@ -15,6 +15,7 @@ defmodule Todohai.Schema.Item do
     field :no_of_done_children, :integer, default: 0
     belongs_to :parent, __MODULE__
     belongs_to :user, Todohai.Accounts.User
+    field :deleted_at, :naive_datetime, default: nil
     timestamps()
   end
 

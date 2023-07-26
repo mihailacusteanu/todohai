@@ -19,7 +19,7 @@ defmodule TodohaiWeb.ItemLive.Show do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     item = Schema.get_item!(id)
-    {:ok, _} = Schema.delete_item(item)
+    {:ok, _} = Schema.soft_delete_item(item)
 
     socket =
       socket

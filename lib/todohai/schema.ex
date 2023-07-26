@@ -25,7 +25,7 @@ defmodule Todohai.Schema do
       from i in Item,
         preload: [:parent],
         order_by: [asc: :inserted_at],
-        where: i.user_id == ^user_id
+        where: i.user_id == ^user_id and is_nil(i.deleted_at)
 
     Repo.all(query)
   end
@@ -44,7 +44,7 @@ defmodule Todohai.Schema do
       from i in Item,
         where: is_nil(i.parent_id),
         order_by: [asc: :inserted_at],
-        where: i.user_id == ^user_id
+        where: i.user_id == ^user_id and is_nil(i.deleted_at)
 
     Repo.all(query)
   end
@@ -63,7 +63,7 @@ defmodule Todohai.Schema do
       ** (Ecto.NoResultsError)
 
   """
-  def get_item!(id), do: Repo.get!(Item, id)
+  def get_item!(id), do: Repo.get!(from(i in Item, where: is_nil(i.deleted_at)), id)
 
   @doc """
   Gets a single item with parent preloaded.
@@ -155,11 +155,14 @@ defmodule Todohai.Schema do
   def update_parent(_child, _child_attrs), do: nil
 
   @spec update_no_of_children_for_parent(item()) :: item()
-  def update_no_of_children_for_parent(%{parent_id: nil, user_id: user_id}), do: nil
+  def update_no_of_children_for_parent(%{parent_id: nil, user_id: _user_id}), do: nil
 
   def update_no_of_children_for_parent(%{parent_id: parent_id, user_id: user_id}) do
     all_children =
-      Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.user_id == ^user_id)
+      Repo.all(
+        from i in Item,
+          where: i.parent_id == ^parent_id and i.user_id == ^user_id and is_nil(i.deleted_at)
+      )
 
     no_of_children = Enum.count(all_children)
     no_of_done_children = Enum.count(all_children, fn it -> it.is_done == true end)
@@ -195,6 +198,32 @@ defmodule Todohai.Schema do
   end
 
   @doc """
+  Soft delete a item.
+
+  ## Examples
+
+      iex> soft_delete_item(item)
+      {:ok, %Item{}}
+
+      iex> soft_delete_item(item)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def soft_delete_item(%Item{} = item) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    result = update_item(item, %{deleted_at: now}) |> IO.inspect(label: "soft_delete_item")
+
+    case result do
+      {:ok, item} ->
+        update_parent_after_delete_child(item)
+        {:ok, item}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
   List all items for a given parent item id.
 
   ## Examples
@@ -214,7 +243,7 @@ defmodule Todohai.Schema do
   def list_children_for_parent(parent_id) do
     Repo.all(
       from i in Item,
-        where: i.parent_id == ^parent_id,
+        where: i.parent_id == ^parent_id and is_nil(i.deleted_at),
         preload: [:parent],
         order_by: [asc: :inserted_at]
     )
@@ -238,7 +267,10 @@ defmodule Todohai.Schema do
   def list_done_children_for_parent(nil), do: []
 
   def list_done_children_for_parent(parent_id) do
-    Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == true)
+    Repo.all(
+      from i in Item,
+        where: i.parent_id == ^parent_id and i.is_done == true and is_nil(i.deleted_at)
+    )
   end
 
   @doc """
@@ -259,7 +291,10 @@ defmodule Todohai.Schema do
   def list_not_done_children_for_parent(nil), do: []
 
   def list_not_done_children_for_parent(parent_id) do
-    Repo.all(from i in Item, where: i.parent_id == ^parent_id and i.is_done == false)
+    Repo.all(
+      from i in Item,
+        where: i.parent_id == ^parent_id and i.is_done == false and is_nil(i.deleted_at)
+    )
   end
 
   # @spec add_child(child_attrs) :: result

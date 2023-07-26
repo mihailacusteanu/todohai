@@ -102,7 +102,7 @@ defmodule TodohaiWeb.ItemLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     item = Schema.get_item!(id)
-    {:ok, _} = Schema.delete_item(item)
+    {:ok, _} = Schema.soft_delete_item(item)
 
     {:noreply, assign(socket, :items, list_items_with_no_parent(socket.assigns.current_user.id))}
   end
